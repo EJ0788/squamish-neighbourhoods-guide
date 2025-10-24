@@ -612,7 +612,7 @@
                         <div class="form-group">
                             <label for="phone">Phone Number</label>
                             <div class="phone-verify-group">
-                                <input type="tel" id="phone" name="phone" placeholder="(604) 555-1234" required autocomplete="tel">
+                                <input type="tel" id="phone" name="phone" placeholder="(604) 555-1234" required autocomplete="off">
                                 <button type="button" class="verify-btn" id="verifyBtn">Verify</button>
                             </div>
                             <div class="error-message" id="phoneError">Please enter a valid phone number</div>
@@ -749,20 +749,24 @@
             }
         });
 
-        document.getElementById('verificationCode').addEventListener('input', (e) => {
-            const code = e.target.value;
-            if (code.length === 6) {
-                if (code === state.verificationCode) {
-                    state.phoneVerified = true;
-                    updateSubmitButton();
-                    hideError('codeError');
-                    e.target.style.borderColor = '#48bb78';
-                } else {
-                    showError('codeError', 'Invalid verification code');
-                    e.target.style.borderColor = '#e53e3e';
-                }
-            }
-        });
+document.getElementById('verificationCode').addEventListener('input', (e) => {
+    const code = e.target.value;
+    console.log('Entered code:', code, 'Type:', typeof code);
+    console.log('Expected code:', state.verificationCode, 'Type:', typeof state.verificationCode);
+    
+    if (code.length === 6) {
+        // Convert both to strings for comparison
+        if (String(code) === String(state.verificationCode)) {
+            state.phoneVerified = true;
+            updateSubmitButton();
+            hideError('codeError');
+            e.target.style.borderColor = '#48bb78';
+        } else {
+            showError('codeError', 'Invalid verification code. Check your SMS.');
+            e.target.style.borderColor = '#e53e3e';
+        }
+    }
+});
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
