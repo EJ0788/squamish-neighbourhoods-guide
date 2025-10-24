@@ -726,8 +726,9 @@
         })
     });
 
-    const data = await response.json();
-    console.log('Full response data:', data);
+const data = await response.json();
+console.log('Full response data:', JSON.stringify(data, null, 2));
+console.log('data.code specifically:', data.code);
 
     if (response.ok) {
         state.verificationSent = true;
