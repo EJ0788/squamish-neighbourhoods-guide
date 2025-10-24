@@ -716,39 +716,40 @@
             verifyBtn.disabled = true;
             verifyBtn.innerHTML = '<span class="loading"></span>Sending...';
 
-            try {
-                const response = await fetch('/api/submit-lead', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        action: 'sendVerification',
-                        phone: phone 
-                    })
-                });
+           try {
+    const response = await fetch('/api/submit-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            action: 'sendVerification',
+            phone: phone 
+        })
+    });
 
-                const data = await response.json();
+    const data = await response.json();
+    console.log('Full response data:', data);
 
-                if (response.ok) {
-                    state.verificationSent = true;
-                    state.verificationCode = data.code;
-                    verifyBtn.textContent = 'Resend Code';
-                    verifyBtn.disabled = false;
-                    codeInput.classList.add('active');
-                    
-                    setTimeout(() => {
-                        document.getElementById('verificationCode').focus();
-                    }, 100);
-                } else {
-                    throw new Error(data.error || 'Failed to send verification');
-                }
-            } catch (error) {
-                console.error('Verification error:', error);
-                showError('phoneError', 'Failed to send verification code. Please try again.');
-                verifyBtn.textContent = 'Verify';
-                verifyBtn.disabled = false;
-            }
-        });
-
+    if (response.ok) {
+        state.verificationSent = true;
+        state.verificationCode = data.code;
+        console.log('Verification code set to:', state.verificationCode);
+        verifyBtn.textContent = 'Resend Code';
+        verifyBtn.disabled = false;
+        codeInput.classList.add('active');
+        
+        setTimeout(() => {
+            document.getElementById('verificationCode').focus();
+        }, 100);
+    } else {
+        throw new Error(data.error || 'Failed to send verification');
+    }
+} catch (error) {
+    console.error('Verification error:', error);
+    showError('phoneError', 'Failed to send verification code. Please try again.');
+    verifyBtn.textContent = 'Verify';
+    verifyBtn.disabled = false;
+           }
+});
 document.getElementById('verificationCode').addEventListener('input', (e) => {
     const code = e.target.value;
     console.log('Entered code:', code, 'Type:', typeof code);
