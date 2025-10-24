@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your complete guide to Squamish neighbourhoods with school ratings, market data, and local insights updated for 2025">
+    <title>Squamish Neighbourhoods Simplified | Your Complete 2025 Guide</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f7f9fc;
+            line-height: 1.6;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            color: white;
+            padding: 60px 20px 40px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 20px;
+            margin: -20px 0 40px 0;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main Content */
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+            margin-top: 40px;
+        }
+
+        .content-left h2 {
+            font-size: 32px;
+            color: #1a202c;
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+
+        .content-left h3 {
+            font-size: 20px;
+            color: #1a202c;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* Preview Image */
+        .preview-mockup {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .preview-mockup img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Benefits List */
+        .benefits {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .benefits li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .benefits li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+        /* Perfect For Box */
+        .perfect-for {
+            background: #f0f7f4;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .perfect-for h3 {
+            font-size: 18px;
+            color: #1a472a;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .perfect-for ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .perfect-for li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #2d3748;
+        }
+
+        .perfect-for li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .testimonial {
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .testimonial:last-child {
+            margin-bottom: 0;
+        }
+
+        .testimonial-author {
+            font-style: normal;
+            font-weight: 600;
+            color: #2d3748;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        /* Form Section */
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .form-container h3 {
+            font-size: 26px;
+            color: #1a202c;
+            margin-bottom: 10px;
+        }
+
+        .form-container .form-subtitle {
+            color: #718096;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #48bb78;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+        }
+
+        .phone-verify-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .phone-verify-group input {
+            flex: 1;
+        }
+
+        .verify-btn {
+            padding: 14px 20px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .verify-btn:hover:not(:disabled) {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .verify-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .code-input {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .code-input.active {
+            display: block;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(26, 71, 42, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .privacy-text {
+            font-size: 13px;
+            color: #718096;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        .privacy-text a {
+            color: #48bb78;
+            text-decoration: none;
+        }
+
+        .checkbox-group {
+            margin: 15px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .checkbox-group label {
+            display: inline;
+            font-weight: 400;
+            font-size: 14px;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            text-align: center;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #48bb78;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            stroke: white;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .success-message h2 {
+            color: #1a202c;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .success-message p {
+            color: #718096;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .access-btn {
+            display: inline-block;
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .access-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(26, 71, 42, 0.4);
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .form-container {
+                position: relative;
+                top: 0;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero .subtitle {
+                font-size: 18px;
+            }
+
+            .content-left h2 {
+                font-size: 26px;
+            }
+
+            .phone-verify-group {
+                flex-direction: column;
+            }
+
+            .verify-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 30px 20px;
+            }
+
+            .hero {
+                padding: 40px 20px 30px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .stats-bar {
+                font-size: 14px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>Squamish Neighbourhoods Simplified</h1>
+        <p class="subtitle">Your complete 20+ page guide to all 18 neighbourhoods. Real insights. Local highlights. Updated for Q3 2025.</p>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        ✓ 18+ neighbourhood deep dives  •  Over 150 downloads  •  Updated Q3 2025 market data
+    </div>
+
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Left Content -->
+            <div class="content-left">
+                <h2>Everything you need to make a confident decision about where to live in Squamish</h2>
+
+                <!-- Preview Mockup -->
+                <div class="preview-mockup">
+                    <p style="text-align: center; color: #718096; margin-bottom: 15px; font-size: 14px; font-weight: 600;">INSIDE THE 20+ PAGE GUIDE:</p>
+                    <img src="https://images.unsplash.com/photo-1568584711169-44e3e5450e53?w=800&auto=format&fit=crop" alt="Squamish Neighbourhood Guide Preview" style="margin-bottom: 15px;">
+                    <p style="text-align: center; color: #4a5568; font-size: 14px; line-height: 1.5;">Neighbourhood maps • School ratings • Market data • Local favorites</p>
+                </div>
+
+                <!-- Market Intelligence -->
+                <h3>📊 Market Intelligence You Need</h3>
+                <ul class="benefits">
+                    <li><strong>Q3 2025 market overview</strong> with current pricing trends across all property types</li>
+                    <li><strong>Single-family homes averaging $1.67M</strong> (up 15% this year with declining inventory)</li>
+                    <li><strong>Apartment market surge of 31%</strong> in sales activity, outperforming provincial trends</li>
+                    <li><strong>Price per square foot analysis</strong> and days on market by neighbourhood</li>
+                </ul>
+
+                <!-- Neighbourhood Deep Dives -->
+                <h3 style="margin-top: 25px;">🏘️ 18+ Neighbourhood Deep Dives</h3>
+                <ul class="benefits">
+                    <li><strong>Britannia Beach</strong> - Historic charm meets ocean views ($2.6M avg)</li>
+                    <li><strong>Valleycliffe</strong> - Family-friendly living at the base of the Chief</li>
+                    <li><strong>Downtown Squamish</strong> - Urban energy with outdoor access</li>
+                    <li><strong>Sea + Sky</strong> - Master-planned modern community</li>
+                    <li><strong>University Heights</strong> - Upscale mountain living</li>
+                    <li><strong>Brackendale</strong> - Riverside charm & eagle capital</li>
+                    <li><strong>Plus 12 more</strong> detailed neighbourhood profiles with pros & cons</li>
+                </ul>
+
+                <!-- Essential Local Intelligence -->
+                <h3 style="margin-top: 25px;">🎯 Essential Local Intelligence</h3>
+                <ul class="benefits">
+                    <li><strong>School catchment areas and ratings</strong> for every neighbourhood</li>
+                    <li><strong>Best restaurants, cafes, and local hotspots</strong> only locals know</li>
+                    <li><strong>Outdoor recreation access points</strong> for trails, climbing, and water sports</li>
+                    <li><strong>Shopping and amenities by area</strong> plus transportation details</li>
+                    <li><strong>New development projects</strong> and future growth projections</li>
+                </ul>
+
+                <!-- Perfect For Box -->
+                <div class="perfect-for">
+                    <h3>Perfect for:</h3>
+                    <ul>
+                        <li>First-time homebuyers exploring Squamish</li>
+                        <li>Families relocating from Vancouver or Toronto</li>
+                        <li>Real estate investors seeking opportunities</li>
+                        <li>Outdoor enthusiasts wanting the perfect base</li>
+                        <li>Anyone considering the Sea-to-Sky lifestyle</li>
+                    </ul>
+                </div>
+
+                <!-- Testimonials -->
+                <div class="testimonials">
+                    <div class="testimonial">
+                        "This guide saved me months of research. The neighbourhood breakdowns helped us find the perfect family home in Valleycliffe!"
+                        <div class="testimonial-author">— Sarah M., Recent Buyer</div>
+                    </div>
+                    <div class="testimonial">
+                        "Eric walked with us every step of the way helping us understand each neighbourhood. He helped us walk away from deals he thought we'd regret. No flashy sales pitches. The most approachable human you could ask for."
+                        <div class="testimonial-author">— NT, Squamish Homebuyer</div>
+                    </div>
+                    <div class="testimonial">
+                        "We never felt pressured to make a decision faster than we were ready. Eric appreciated our many questions and was willing to chat through various scenarios. 10/10 recommend!"
+                        <div class="testimonial-author">— KT, First-Time Buyer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Form -->
+            <div class="form-container">
+                <div id="leadForm">
+                    <h3>Get Your Free Guide</h3>
+                    <p class="form-subtitle">Join homebuyers who downloaded this guide before making their move</p>
+
+                    <form id="mainForm">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" required autocomplete="given-name">
+                            <div class="error-message" id="firstNameError">Please enter your first name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" required autocomplete="family-name">
+                            <div class="error-message" id="lastNameError">Please enter your last name</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required autocomplete="email">
+                            <div class="error-message" id="emailError">Please enter a valid email</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <div class="phone-verify-group">
+                                <input type="tel" id="phone" name="phone" placeholder="(604) 555-1234" required autocomplete="tel">
+                                <button type="button" class="verify-btn" id="verifyBtn">Verify</button>
+                            </div>
+                            <div class="error-message" id="phoneError">Please enter a valid phone number</div>
+                            
+                            <div class="code-input" id="codeInput">
+                                <label for="verificationCode">Verification Code</label>
+                                <input type="text" id="verificationCode" name="verificationCode" placeholder="Enter 6-digit code" maxlength="6" autocomplete="one-time-code">
+                                <div class="error-message" id="codeError">Please enter the verification code</div>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="consent" name="consent" required>
+                            <label for="consent">I agree to receive the guide and occasional Squamish market updates</label>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                            Get My Free Guide
+                        </button>
+
+                        <p class="privacy-text">
+                            We respect your privacy. Instant download + occasional market insights. Unsubscribe anytime. <a href="#">Privacy Policy</a>
+                        </p>
+                    </form>
+                </div>
+
+                <div class="success-message" id="successMessage">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 52 52">
+                            <polyline points="14 27 22 35 38 19"/>
+                        </svg>
+                    </div>
+                    <h2>Check Your Email!</h2>
+                    <p>Your Squamish Neighbourhoods Guide is on its way. Check your inbox in the next 2 minutes.</p>
+                    <a href="#" class="access-btn" id="accessBtn">Access Your Guide Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Eric Johnson</strong> | REALTOR® | Engel & Völkers Squamish/Whistler</p>
+        <p style="margin-top: 8px;">604.828.5704 | info@corridorhomes.ca</p>
+    </div>
+
+    <script>
+        // State management
+        let state = {
+            phoneVerified: false,
+            verificationCode: null,
+            verificationSent: false
+        };
+
+        const form = document.getElementById('mainForm');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const codeInput = document.getElementById('codeInput');
+        const successMessage = document.getElementById('successMessage');
+        const accessBtn = document.getElementById('accessBtn');
+        const leadForm = document.getElementById('leadForm');
+        const consentCheckbox = document.getElementById('consent');
+
+        document.getElementById('phone').addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.slice(0, 10);
+            
+            if (value.length >= 6) {
+                value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6)}`;
+            } else if (value.length >= 3) {
+                value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+            }
+            
+            e.target.value = value;
+            
+            if (state.verificationSent) {
+                state.phoneVerified = false;
+                state.verificationSent = false;
+                updateSubmitButton();
+                codeInput.classList.remove('active');
+                document.getElementById('verificationCode').value = '';
+            }
+        });
+
+        function updateSubmitButton() {
+            submitBtn.disabled = !(state.phoneVerified && consentCheckbox.checked);
+        }
+
+        consentCheckbox.addEventListener('change', updateSubmitButton);
+
+        verifyBtn.addEventListener('click', async () => {
+            const phoneInput = document.getElementById('phone');
+            const phone = phoneInput.value.replace(/\D/g, '');
+            
+            if (phone.length !== 10) {
+                showError('phoneError', 'Please enter a valid 10-digit phone number');
+                return;
+            }
+
+            hideError('phoneError');
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<span class="loading"></span>Sending...';
+
+            try {
+                const response = await fetch('/api/submit-lead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        action: 'sendVerification',
+                        phone: phone 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    state.verificationSent = true;
+                    state.verificationCode = data.code;
+                    verifyBtn.textContent = 'Resend Code';
+                    verifyBtn.disabled = false;
+                    codeInput.classList.add('active');
+                    
+                    setTimeout(() => {
+                        document.getElementById('verificationCode').focus();
+                    }, 100);
+                } else {
+                    throw new Error(data.error || 'Failed to send verification');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError('phoneError', 'Failed to send verification code. Please try again.');
+                verifyBtn.textContent = 'Verify';
+                verifyBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('verificationCode').addEventListener('input', (e) => {
+            const code = e.target.value;
+            if (code.length === 6) {
+                if (code === state.verificationCode) {
+                    state.phoneVerified = true;
+                    updateSubmitButton();
+                    hideError('codeError');
+                    e.target.style.borderColor = '#48bb78';
+                } else {
+                    showError('codeError', 'Invalid verification code');
+                    e.target.style.borderColor = '#e53e3e';
+                }
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!state.phoneVerified) {
+                showError('phoneError', 'Please verify your phone number first');
+                return;
+            }
+
+            if (!consentCheckbox.checked) {
+                alert('Please agree to receive the guide and market updates');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span>Processing...';
+
+            const formData = {
+                action: 'submitLead',
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value,
+                source: 'Squamish Neighbourhoods Guide 2025',
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch('/api/submit-lead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    leadForm.style.display = 'none';
+                    successMessage.classList.add('active');
+                    accessBtn.href = data.accessUrl;
+                    
+                    if (window.gtag) {
+                        gtag('event', 'conversion', {
+                            'send_to': 'AW-CONVERSION_ID/CONVERSION_LABEL',
+                            'value': 1.0,
+                            'currency': 'CAD'
+                        });
+                    }
+                } else {
+                    throw new Error(data.error || 'Submission failed');
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                alert('There was an error processing your request. Please try again or contact us directly at 604.828.5704');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Get My Free Guide';
+            }
+        });
+
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.classList.add('active');
+        }
+
+        function hideError(elementId) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) {
+                errorEl.classList.remove('active');
+            }
+        }
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                const errorId = input.id + 'Error';
+                hideError(errorId);
+            });
+        });
+    </script>
+</body>
+</html>
