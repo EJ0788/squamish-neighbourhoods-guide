@@ -222,8 +222,7 @@
         }
 
         input[type="text"],
-        input[type="email"],
-        input[type="tel"] {
+        input[type="email"] {
             width: 100%;
             padding: 14px;
             border: 2px solid #e2e8f0;
@@ -238,49 +237,6 @@
             border-color: #48bb78;
             background: white;
             box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
-        }
-
-        .phone-verify-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .phone-verify-group input {
-            flex: 1;
-        }
-
-        .verify-btn {
-            padding: 14px 20px;
-            background: #48bb78;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            font-size: 14px;
-        }
-
-        .verify-btn:hover:not(:disabled) {
-            background: #38a169;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
-        }
-
-        .verify-btn:disabled {
-            background: #cbd5e0;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .code-input {
-            display: none;
-            margin-top: 15px;
-        }
-
-        .code-input.active {
-            display: block;
         }
 
         .submit-btn {
@@ -318,20 +274,6 @@
         .privacy-text a {
             color: #48bb78;
             text-decoration: none;
-        }
-
-        .checkbox-group {
-            margin: 15px 0;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            margin-right: 8px;
-        }
-
-        .checkbox-group label {
-            display: inline;
-            font-weight: 400;
-            font-size: 14px;
         }
 
         /* Success Message */
@@ -469,14 +411,6 @@
             .content-left h2 {
                 font-size: 26px;
             }
-
-            .phone-verify-group {
-                flex-direction: column;
-            }
-
-            .verify-btn {
-                width: 100%;
-            }
         }
 
         @media (max-width: 600px) {
@@ -609,32 +543,12 @@
                             <div class="error-message" id="emailError">Please enter a valid email</div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <div class="phone-verify-group">
-                                <input type="tel" id="phone" name="phone" placeholder="(604) 555-1234" required autocomplete="off">
-                                <button type="button" class="verify-btn" id="verifyBtn">Verify</button>
-                            </div>
-                            <div class="error-message" id="phoneError">Please enter a valid phone number</div>
-                            
-                            <div class="code-input" id="codeInput">
-                                <label for="verificationCode">Verification Code</label>
-                                <input type="text" id="verificationCode" name="verificationCode" placeholder="Enter 6-digit code" maxlength="6" autocomplete="one-time-code">
-                                <div class="error-message" id="codeError">Please enter the verification code</div>
-                            </div>
-                        </div>
-
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="consent" name="consent" required>
-                            <label for="consent">I agree to receive the guide and occasional Squamish market updates</label>
-                        </div>
-
-                        <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                        <button type="submit" class="submit-btn" id="submitBtn">
                             Get My Free Guide
                         </button>
 
                         <p class="privacy-text">
-                            We respect your privacy. Instant download + occasional market insights. Unsubscribe anytime. <a href="#">Privacy Policy</a>
+                            We respect your privacy. Instant download + occasional market insights. Unsubscribe anytime.
                         </p>
                     </form>
                 </div>
@@ -660,126 +574,22 @@
     </div>
 
     <script>
-        // State management
-        let state = {
-            phoneVerified: false,
-            verificationCode: null,
-            verificationSent: false
-        };
-
         const form = document.getElementById('mainForm');
-        const verifyBtn = document.getElementById('verifyBtn');
         const submitBtn = document.getElementById('submitBtn');
-        const codeInput = document.getElementById('codeInput');
         const successMessage = document.getElementById('successMessage');
         const accessBtn = document.getElementById('accessBtn');
         const leadForm = document.getElementById('leadForm');
-        const consentCheckbox = document.getElementById('consent');
-
-        document.getElementById('phone').addEventListener('input', (e) => {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 10) value = value.slice(0, 10);
-            
-            if (value.length >= 6) {
-                value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6)}`;
-            } else if (value.length >= 3) {
-                value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
-            }
-            
-            e.target.value = value;
-            
-            if (state.verificationSent) {
-                state.phoneVerified = false;
-                state.verificationSent = false;
-                updateSubmitButton();
-                codeInput.classList.remove('active');
-                document.getElementById('verificationCode').value = '';
-            }
-        });
-
-        function updateSubmitButton() {
-            submitBtn.disabled = !(state.phoneVerified && consentCheckbox.checked);
-        }
-
-        consentCheckbox.addEventListener('change', updateSubmitButton);
-
-        verifyBtn.addEventListener('click', async () => {
-            const phoneInput = document.getElementById('phone');
-            const phone = phoneInput.value.replace(/\D/g, '');
-            
-            if (phone.length !== 10) {
-                showError('phoneError', 'Please enter a valid 10-digit phone number');
-                return;
-            }
-
-            hideError('phoneError');
-            verifyBtn.disabled = true;
-            verifyBtn.innerHTML = '<span class="loading"></span>Sending...';
-
-           try {
-    const response = await fetch('/api/submit-lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            action: 'sendVerification',
-            phone: phone 
-        })
-    });
-
-const data = await response.json();
-console.log('Full response data:', JSON.stringify(data, null, 2));
-console.log('data.code specifically:', data.code);
-
-    if (response.ok) {
-        state.verificationSent = true;
-        state.verificationCode = data.code;
-        console.log('Verification code set to:', state.verificationCode);
-        verifyBtn.textContent = 'Resend Code';
-        verifyBtn.disabled = false;
-        codeInput.classList.add('active');
-        
-        setTimeout(() => {
-            document.getElementById('verificationCode').focus();
-        }, 100);
-    } else {
-        throw new Error(data.error || 'Failed to send verification');
-    }
-} catch (error) {
-    console.error('Verification error:', error);
-    showError('phoneError', 'Failed to send verification code. Please try again.');
-    verifyBtn.textContent = 'Verify';
-    verifyBtn.disabled = false;
-           }
-});
-document.getElementById('verificationCode').addEventListener('input', (e) => {
-    const code = e.target.value;
-    console.log('Entered code:', code, 'Type:', typeof code);
-    console.log('Expected code:', state.verificationCode, 'Type:', typeof state.verificationCode);
-    
-    if (code.length === 6) {
-        // Convert both to strings for comparison
-        if (String(code) === String(state.verificationCode)) {
-            state.phoneVerified = true;
-            updateSubmitButton();
-            hideError('codeError');
-            e.target.style.borderColor = '#48bb78';
-        } else {
-            showError('codeError', 'Invalid verification code. Check your SMS.');
-            e.target.style.borderColor = '#e53e3e';
-        }
-    }
-});
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            if (!state.phoneVerified) {
-                showError('phoneError', 'Please verify your phone number first');
-                return;
-            }
+            // Basic validation
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('email').value.trim();
 
-            if (!consentCheckbox.checked) {
-                alert('Please agree to receive the guide and market updates');
+            if (!firstName || !lastName || !email) {
+                alert('Please fill in all required fields');
                 return;
             }
 
@@ -787,11 +597,9 @@ document.getElementById('verificationCode').addEventListener('input', (e) => {
             submitBtn.innerHTML = '<span class="loading"></span>Processing...';
 
             const formData = {
-                action: 'submitLead',
-                firstName: document.getElementById('firstName').value.trim(),
-                lastName: document.getElementById('lastName').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value,
+                firstName,
+                lastName,
+                email,
                 source: 'Squamish Neighbourhoods Guide 2025',
                 timestamp: new Date().toISOString()
             };
