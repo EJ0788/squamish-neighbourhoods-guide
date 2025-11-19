@@ -1,37 +1,19 @@
-// Vercel Serverless Function for Lead Processing
+// Vercel Serverless Function for Lead Processing (EMAIL ONLY VERSION)
 // Path: api/submit-lead.js
 
 export default async function handler(req, res) {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    return res.status(200).end();
-  }
-
+  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // CORS headers for security
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // ... rest of your code
-
-  const { action } = req.body;
 
   try {
-    if (action === 'sendVerification') {
-      return await handlePhoneVerification(req, res);
-    }
-
-    if (action === 'submitLead') {
-      return await handleLeadSubmission(req, res);
-    }
-
-    return res.status(400).json({ error: 'Invalid action' });
+    return await handleLeadSubmission(req, res);
   } catch (error) {
     console.error('Error:', error);
     return res.status(500).json({ error: 'Internal server error' });
@@ -39,83 +21,32 @@ export default async function handler(req, res) {
 }
 
 // ==========================================
-// PHONE VERIFICATION HANDLER
-// ==========================================
-async function handlePhoneVerification(req, res) {
-  const { phone } = req.body;
-
-  if (!phone || phone.length !== 10) {
-    return res.status(400).json({ error: 'Invalid phone number' });
-  }
-
-  const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-  // TWILIO SMS - Uncomment when ready for production
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
-
-  if (accountSid && authToken && twilioPhone) {
-    try {
-      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
-      
-      const params = new URLSearchParams();
-      params.append('To', `+1${phone}`);
-      params.append('From', twilioPhone);
-      params.append('Body', `Your Squamish Neighbourhood Guide verification code is: ${verificationCode}`);
-
-      const twilioResponse = await fetch(twilioUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: params
-      });
-
-      if (!twilioResponse.ok) {
-        throw new Error('Failed to send SMS');
-      }
-
-  return res.status(200).json({
-    success: true,
-    code: verificationCode,  // ADD THIS LINE
-    message: 'Verification code sent'
-});
-    } catch (error) {
-      console.error('Twilio error:', error);
-      return res.status(500).json({ error: 'Failed to send verification code' });
-    }
-  }
-
-  // Demo mode fallback (for testing)
-  console.log(`Demo mode - Verification code for ${phone}: ${verificationCode}`);
-  return res.status(200).json({
-    success: true,
-    code: verificationCode,
-    message: 'Verification code sent (demo mode)'
-  });
-}
-
-// ==========================================
 // LEAD SUBMISSION HANDLER
 // ==========================================
 async function handleLeadSubmission(req, res) {
-  const { firstName, lastName, email, phone, source, timestamp } = req.body;
+  const { firstName, lastName, email, source, timestamp } = req.body;
 
-  if (!firstName || !lastName || !email || !phone) {
+  // Validate required fields
+  if (!firstName || !lastName || !email) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+
+  // Generate unique access token
   const accessToken = generateAccessToken();
-  const gammaUrl = process.env.GAMMA_URL || 'https://gamma.app/docs/Squamish-Neighbourhood-Guide-Your-Gateway-to-the-Outdoor-Capital--fe8mmxzefxjrz55';
+  const gammaUrl = process.env.GAMMA_URL || 'https://new-builds-squamish-the--akehhlj.gamma.site/';
   const accessUrl = `${gammaUrl}?ref=${accessToken}`;
 
+  // Prepare lead data
   const leadData = {
     firstName,
     lastName,
     email,
-    phone,
     source,
     timestamp,
     accessToken,
@@ -123,6 +54,7 @@ async function handleLeadSubmission(req, res) {
   };
 
   try {
+    // Run these in parallel for better performance
     await Promise.all([
       sendToLofty(leadData),
       sendAccessEmail(leadData)
@@ -146,83 +78,77 @@ async function sendToLofty(leadData) {
   const loftyApiKey = process.env.LOFTY_API_KEY;
   
   if (!loftyApiKey) {
-    console.warn('Lofty API key not configured - skipping CRM integration');
+    console.warn('Lofty API key not configured');
     return;
   }
 
-  try {
-    const cleanPhone = leadData.phone.replace(/\D/g, '');
-    const formattedPhone = `+1${cleanPhone}`;
+  const payload = {
+    firstName: leadData.firstName,
+    lastName: leadData.lastName,
+    email: leadData.email,
+    emails: [leadData.email],
+    source: leadData.source || 'Squamish New Development Guide',
+    tags: ['New Development Guide', 'Website Lead', 'Email Only Lead'],
+    notes: `Lead captured via email-only form. Access token: ${leadData.accessToken}`
+  };
 
+  try {
     const response = await fetch('https://api.lofty.com/v1.0/leads', {
       method: 'POST',
       headers: {
         'Authorization': `token ${loftyApiKey}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        firstName: leadData.firstName,
-        lastName: leadData.lastName,
-        email: leadData.email,
-        phone: formattedPhone,
-        emails: [leadData.email],
-        phones: [formattedPhone],
-        source: 'Squamish Neighbourhoods Guide 2025',
-        tags: ['Website Lead', 'Neighbourhood Guide', 'Squamish'],
-        notes: `Downloaded neighbourhood guide on ${new Date(leadData.timestamp).toLocaleDateString()}. Access token: ${leadData.accessToken}`
-      })
+      body: JSON.stringify(payload)
     });
 
+    const responseText = await response.text();
+    console.log('Lofty response:', response.status, responseText);
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Lofty API error:', response.status, errorText);
-      throw new Error(`Lofty API error: ${response.status}`);
+      throw new Error(`Lofty API error: ${response.status} - ${responseText}`);
     }
 
     console.log('Lead sent to Lofty successfully');
   } catch (error) {
-    console.error('Lofty integration error:', error);
-    // Don't throw - still send email even if Lofty fails
+    console.error('Lofty integration error:', error.message);
   }
 }
 
 // ==========================================
-// EMAIL DELIVERY (RESEND)
+// EMAIL DELIVERY
 // ==========================================
 async function sendAccessEmail(leadData) {
   const resendApiKey = process.env.RESEND_API_KEY;
   
-  if (!resendApiKey) {
-    console.warn('Resend API key not configured - skipping email');
-    return;
-  }
+  if (resendApiKey) {
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'Squamish Real Estate <noreply@mail.corridorhomes.ca>',
+          to: leadData.email,
+          subject: 'Your Squamish Neighbourhood Guide 🏔️',
+          html: generateEmailHTML(leadData)
+        })
+      });
 
-  try {
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: 'Eric Johnson | Squamish Real Estate <noreply@mail.corridorhomes.ca>',
-        to: leadData.email,
-        subject: '🏔️ Your Squamish Neighbourhood Guide is Ready',
-        html: generateEmailHTML(leadData)
-      })
-    });
+      if (!response.ok) {
+        throw new Error(`Resend API error: ${response.status}`);
+      }
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Resend API error:', response.status, errorText);
-      throw new Error(`Resend API error: ${response.status}`);
+      console.log('Email sent successfully');
+      return;
+    } catch (error) {
+      console.error('Email sending error:', error);
     }
-
-    console.log('Email sent successfully to:', leadData.email);
-  } catch (error) {
-    console.error('Email sending error:', error);
-    throw error;
   }
+
+  console.log('Email would be sent to:', leadData.email);
 }
 
 // ==========================================
@@ -244,9 +170,8 @@ function generateEmailHTML(leadData) {
               
               <!-- Header -->
               <tr>
-                <td style="background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); padding: 40px 30px; text-align: center;">
-                  <h1 style="color: white; margin: 0; font-size: 28px;">🏔️ Your Guide is Ready!</h1>
-                  <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Squamish Neighbourhoods Simplified</p>
+                <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
+                  <h1 style="color: white; margin: 0; font-size: 28px;">Your Squamish Neighbourhood Guide is Ready</h1>
                 </td>
               </tr>
               
@@ -258,26 +183,55 @@ function generateEmailHTML(leadData) {
                   </p>
                   
                   <p style="margin: 0 0 20px 0; color: #2d3748; font-size: 16px; line-height: 1.6;">
-                    Thanks for downloading the Squamish Neighbourhood Guide! Your comprehensive 20+ page guide is ready with:
+                    Thanks for requesting the Squamish Neighbourhood Guide. Your access link is below.
                   </p>
+
+                  <h3 style="margin: 30px 0 15px 0; color: #1a202c; font-size: 18px; font-weight: 700;">What's Inside:</h3>
                   
-                  <ul style="color: #2d3748; font-size: 16px; line-height: 1.8; margin: 0 0 30px 0;">
-                    <li>Deep dives into all 18+ neighbourhoods</li>
-                    <li>Q3 2025 market data and pricing trends</li>
-                    <li>School ratings and family insights</li>
-                    <li>Local favorites and hidden gems</li>
-                    <li>Investment analysis and future projections</li>
+                  <p style="margin: 15px 0 8px 0; color: #1a202c; font-size: 16px; font-weight: 600; line-height: 1.6;">
+                    Market Intelligence
+                  </p>
+                  <ul style="color: #2d3748; font-size: 15px; line-height: 1.7; margin: 0 0 20px 0; padding-left: 20px;">
+                    <li>Q3 2025 pricing trends across all property types</li>
+                    <li>Single-family homes averaging $1.67M (up 15% this year)</li>
+                    <li>Apartment market surge of 31% in sales activity</li>
+                    <li>Price per square foot analysis by neighbourhood</li>
                   </ul>
+
+                  <p style="margin: 15px 0 8px 0; color: #1a202c; font-size: 16px; font-weight: 600; line-height: 1.6;">
+                    18+ Neighbourhood Deep Dives
+                  </p>
+                  <ul style="color: #2d3748; font-size: 15px; line-height: 1.7; margin: 0 0 20px 0; padding-left: 20px;">
+                    <li>Britannia Beach, Valleycliffe, Downtown Squamish, Sea + Sky, University Heights, Brackendale, and 12 more</li>
+                    <li>Real pros and cons for each area</li>
+                    <li>Average pricing and inventory trends</li>
+                    <li>Best fit for different buyer profiles</li>
+                  </ul>
+
+                  <p style="margin: 15px 0 8px 0; color: #1a202c; font-size: 16px; font-weight: 600; line-height: 1.6;">
+                    Essential Local Intelligence
+                  </p>
+                  <ul style="color: #2d3748; font-size: 15px; line-height: 1.7; margin: 0 0 25px 0; padding-left: 20px;">
+                    <li>School catchment areas and ratings</li>
+                    <li>Best restaurants, cafes, and local hotspots</li>
+                    <li>Outdoor recreation access points</li>
+                    <li>Shopping, amenities, and transportation details</li>
+                    <li>New development projects and growth projections</li>
+                  </ul>
+                  
+                  <p style="margin: 0 0 25px 0; color: #2d3748; font-size: 16px; line-height: 1.6;">
+                    Whether you're comparing neighbourhoods, timing the market, or trying to understand value in different areas — this guide gives you the clarity to move forward.
+                  </p>
                   
                   <div style="text-align: center; margin: 30px 0;">
                     <a href="${leadData.accessUrl}" 
-                       style="display: inline-block; background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 100%); color: white; text-decoration: none; padding: 16px 40px; border-radius: 10px; font-weight: 600; font-size: 16px;">
+                       style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 16px 40px; border-radius: 10px; font-weight: 600; font-size: 16px;">
                       Access Your Guide Now
                     </a>
                   </div>
                   
-                  <p style="margin: 30px 0 0 0; color: #718096; font-size: 14px; line-height: 1.6;">
-                    <strong>Questions about specific neighbourhoods?</strong> I'm here to help you find the perfect fit. Feel free to reach out anytime at 604.828.5704 or just reply to this email.
+                  <p style="margin: 25px 0 0 0; color: #718096; font-size: 14px; line-height: 1.6;">
+                    Bookmark this page and reference it anytime. Questions about a specific neighbourhood? Hit reply.
                   </p>
                 </td>
               </tr>
@@ -285,14 +239,11 @@ function generateEmailHTML(leadData) {
               <!-- Footer -->
               <tr>
                 <td style="background-color: #f7fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
-                  <p style="margin: 0; color: #2d3748; font-size: 14px; font-weight: 600;">
-                    Eric Johnson | REALTOR®
+                  <p style="margin: 0; color: #718096; font-size: 14px;">
+                    Eric Johnson | Engel & Völkers Squamish
                   </p>
-                  <p style="margin: 5px 0; color: #718096; font-size: 14px;">
-                    Engel & Völkers Squamish/Whistler
-                  </p>
-                  <p style="margin: 10px 0 0 0; color: #718096; font-size: 14px;">
-                    604.828.5704 | info@corridorhomes.ca
+                  <p style="margin: 5px 0 0 0; color: #718096; font-size: 14px;">
+                    www.corridorhomes.ca
                   </p>
                 </td>
               </tr>
