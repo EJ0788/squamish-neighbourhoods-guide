@@ -1,4 +1,4 @@
-// Vercel Serverless Function for Lead Processing
+// Vercel Serverless Function for Lead Processing (EMAIL ONLY - NEIGHBOURHOOD GUIDE)
 // Path: api/submit-lead.js
 
 export default async function handler(req, res) {
@@ -17,21 +17,9 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // ... rest of your code
-
-  const { action } = req.body;
 
   try {
-    if (action === 'sendVerification') {
-      return await handlePhoneVerification(req, res);
-    }
-
-    if (action === 'submitLead') {
-      return await handleLeadSubmission(req, res);
-    }
-
-    return res.status(400).json({ error: 'Invalid action' });
+    return await handleLeadSubmission(req, res);
   } catch (error) {
     console.error('Error:', error);
     return res.status(500).json({ error: 'Internal server error' });
@@ -39,83 +27,29 @@ export default async function handler(req, res) {
 }
 
 // ==========================================
-// PHONE VERIFICATION HANDLER
-// ==========================================
-async function handlePhoneVerification(req, res) {
-  const { phone } = req.body;
-
-  if (!phone || phone.length !== 10) {
-    return res.status(400).json({ error: 'Invalid phone number' });
-  }
-
-  const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-  // TWILIO SMS - Uncomment when ready for production
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
-
-  if (accountSid && authToken && twilioPhone) {
-    try {
-      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
-      
-      const params = new URLSearchParams();
-      params.append('To', `+1${phone}`);
-      params.append('From', twilioPhone);
-      params.append('Body', `Your Squamish Neighbourhood Guide verification code is: ${verificationCode}`);
-
-      const twilioResponse = await fetch(twilioUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: params
-      });
-
-      if (!twilioResponse.ok) {
-        throw new Error('Failed to send SMS');
-      }
-
-  return res.status(200).json({
-    success: true,
-    code: verificationCode,  // ADD THIS LINE
-    message: 'Verification code sent'
-});
-    } catch (error) {
-      console.error('Twilio error:', error);
-      return res.status(500).json({ error: 'Failed to send verification code' });
-    }
-  }
-
-  // Demo mode fallback (for testing)
-  console.log(`Demo mode - Verification code for ${phone}: ${verificationCode}`);
-  return res.status(200).json({
-    success: true,
-    code: verificationCode,
-    message: 'Verification code sent (demo mode)'
-  });
-}
-
-// ==========================================
 // LEAD SUBMISSION HANDLER
 // ==========================================
 async function handleLeadSubmission(req, res) {
-  const { firstName, lastName, email, phone, source, timestamp } = req.body;
+  const { firstName, lastName, email, source, timestamp } = req.body;
 
-  if (!firstName || !lastName || !email || !phone) {
+  if (!firstName || !lastName || !email) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+
   const accessToken = generateAccessToken();
-  const gammaUrl = process.env.GAMMA_URL || 'https://gamma.app/docs/Squamish-Neighbourhood-Guide-Your-Gateway-to-the-Outdoor-Capital--fe8mmxzefxjrz55';
+  const gammaUrl = process.env.GAMMA_URL || 'https://squamish-neighbourhood-g-b51q0ml.gamma.site/';
   const accessUrl = `${gammaUrl}?ref=${accessToken}`;
 
   const leadData = {
     firstName,
     lastName,
     email,
-    phone,
     source,
     timestamp,
     accessToken,
@@ -151,9 +85,6 @@ async function sendToLofty(leadData) {
   }
 
   try {
-    const cleanPhone = leadData.phone.replace(/\D/g, '');
-    const formattedPhone = `+1${cleanPhone}`;
-
     const response = await fetch('https://api.lofty.com/v1.0/leads', {
       method: 'POST',
       headers: {
@@ -164,11 +95,9 @@ async function sendToLofty(leadData) {
         firstName: leadData.firstName,
         lastName: leadData.lastName,
         email: leadData.email,
-        phone: formattedPhone,
         emails: [leadData.email],
-        phones: [formattedPhone],
-        source: 'Squamish Neighbourhoods Guide 2025',
-        tags: ['Website Lead', 'Neighbourhood Guide', 'Squamish'],
+        source: leadData.source || 'Squamish Neighbourhoods Guide 2025',
+        tags: ['Website Lead', 'Neighbourhood Guide', 'Squamish', 'Email Only Lead'],
         notes: `Downloaded neighbourhood guide on ${new Date(leadData.timestamp).toLocaleDateString()}. Access token: ${leadData.accessToken}`
       })
     });
